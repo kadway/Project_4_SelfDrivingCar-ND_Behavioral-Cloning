@@ -3,7 +3,18 @@ import cv2
 import numpy as np
 from sklearn.utils import shuffle
 
-img_path = '../../opt/IMG/'
+img_path = 'train_data/IMG/'
+
+def increase_brightness(img, brightness=255):
+    hsv = cv2.cvtColor(img, cv2.COLOR_BGR2HSV) #convert it to hsv
+    h, s, v = cv2.split(hsv)
+    v += brightness
+    new_hsv = cv2.merge((h, s, v))
+    return cv2.cvtColor(new_hsv, cv2.COLOR_HSV2BGR)
+
+def convert_RGB(img, brightness=255):
+    img=increase_brightness(img, brightness)
+    return cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
 
 def generator(samples, batch_size=32):
     num_samples = len(samples)
@@ -25,9 +36,9 @@ def generator(samples, batch_size=32):
                 img_right_name  = img_right_name.split('/')[-1]
    
                 # read in images from center, left and right cameras and mirror center image
-                img_center = cv2.imread(img_path + img_center_name)
-                img_left  = cv2.imread(img_path + img_left_name)
-                img_right = cv2.imread(img_path + img_right_name)
+                img_center = convert_RGB(cv2.imread(img_path + img_center_name))
+                img_left  = convert_RGB(cv2.imread(img_path + img_left_name))
+                img_right = convert_RGB(cv2.imread(img_path + img_right_name))
                 # mirror center image to get more generalized data
                
                 center_flipped = cv2.flip(img_center,1)  
@@ -50,4 +61,3 @@ def generator(samples, batch_size=32):
             X_train = np.asarray(car_images)
             y_train = np.asarray(steering_angles)
             yield shuffle(X_train, y_train)
-

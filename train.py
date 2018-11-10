@@ -39,8 +39,6 @@ def train_cnn(model_name = "model.h5"):
     
     # Preprocess incoming data
     model.add(Lambda(lambda x: x / 255.0 - 0.5, input_shape=(160,320,3), name='lambda'))
-    
-    #first was 70,25 crop - did not work very well- now try 50,20
     model.add(Cropping2D(cropping=((50,20), (0,0)), name='crop'))
     
     #add convolutional layers

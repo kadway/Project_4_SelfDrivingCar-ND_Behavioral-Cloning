@@ -19,7 +19,8 @@ import matplotlib.pyplot as plt
 
 def train_cnn(model_name = "model.h5"):
 
-    csv_path = 'train_data/driving_log.csv'
+    #csv_path = 'train_data/driving_log.csv'
+    csv_path = 'train_data/driving_log_2tracks.csv'
     samples = []
     with open(csv_path) as csvfile:
         reader = csv.reader(csvfile)

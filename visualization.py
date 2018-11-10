@@ -41,7 +41,6 @@ def show(model_name="model.h5"):
     #convolution3 = Model(model.input, model.get_layer('conv3').output)
     #convolution4 = Model(model.input, model.get_layer('conv4').output)
     #convolution5 = Model(model.input, model.get_layer('conv5').output)
-
     #plot_model(model, to_file='plots/model.jpg')
         
     out_norm  = norm.predict(input_images)

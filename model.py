@@ -42,8 +42,8 @@ def generator(samples, batch_size=32):
                 # mirror center image to get more generalized data
                
                 center_flipped = cv2.flip(img_center,1)  
-                left_flipped = cv2.flip(img_left,1)
-                right_flipped = cv2.flip(img_right,1)
+                #left_flipped = cv2.flip(img_left,1)
+                #right_flipped = cv2.flip(img_right,1)
                 #get steering value from the read in line
                 steering_center = float(batch_sample[3])
                 # create adjusted steering measurements for the side camera images
@@ -52,11 +52,13 @@ def generator(samples, batch_size=32):
                 steering_right = steering_center - correction
                 #invert steering sign for mirror center image
                 steering_center_flipped = -steering_center
-                steering_left_flipped = steering_right
-                steering_right_flipped = steering_left
+                #steering_left_flipped = steering_right
+                #steering_right_flipped = steering_left
                 # add images and angles to data set
-                car_images.extend((img_center, img_left, img_right, center_flipped, left_flipped, right_flipped))
-                steering_angles.extend((steering_center, steering_left, steering_right, steering_center_flipped, steering_left_flipped, steering_right_flipped))
+                car_images.extend((img_center, img_left, img_right, center_flipped))
+                #car_images.extend((img_center, img_left, img_right, center_flipped, left_flipped, right_flipped))
+                steering_angles.extend((steering_center, steering_left, steering_right, steering_center_flipped))
+                #steering_angles.extend((steering_center, steering_left, steering_right, steering_center_flipped, steering_left_flipped, steering_right_flipped))
                 
             X_train = np.asarray(car_images)
             y_train = np.asarray(steering_angles)

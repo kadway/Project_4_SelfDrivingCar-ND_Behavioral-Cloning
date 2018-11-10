@@ -20,7 +20,7 @@ def read_preview_images():
             filename = source_path.split('/')[-1]
             current_path = img_path + filename
             image = increase_brightness(cv2.imread(current_path), 255)
-            cv2.imwrite("CNN_images/input{}.jpg".format(idx), image)
+            #cv2.imwrite("CNN_images/input{}.jpg".format(idx), image)
             images.append(image)
             if idx >= 9:
                 break 
@@ -42,7 +42,7 @@ def show(model_name="model.h5"):
     #convolution4 = Model(model.input, model.get_layer('conv4').output)
     #convolution5 = Model(model.input, model.get_layer('conv5').output)
 
-    plot_model(model, to_file='plots/model.jpg')
+    #plot_model(model, to_file='plots/model.jpg')
         
     out_norm  = norm.predict(input_images)
     print(out_norm.shape)
@@ -64,7 +64,7 @@ def show(model_name="model.h5"):
         #print("Norm layer images saved.")
     for idx,image in enumerate(out_crop):
         cv2.imwrite("CNN_images/crop{}.jpg".format(idx),image*255)
-    #for idx,image in enumerate(out_conv1):
+    #for idx,image in enumerate(out_conv1)
     #    for i,img in enumerate(image.shape[2])
     #    cv2.imwrite("CNN_images/conv1_{}{}.jpg".format(idx,i),img*255)
     #for idx,image in enumerate(out_conv2):
@@ -78,4 +78,12 @@ def show(model_name="model.h5"):
     
     return norm, out_norm
 
+def predict_image(input_img, name, model_name="model.h5", layer_name="lambda"):
+    #load the saved model
+    model = load_model(model_name)
+    out = Model(model.input, model.get_layer(layer_name).output)
+    out_img  = out.predict(input_img)
+    cv2.imwrite("CNN_images/Prediction_layer_{}_{}".format(layer_name,idx), image*255)
+    print("Prediction from layer {} saved to CNN_images/Prediction_layer_{}_{}".format(layer_name, layer_name, name))
+    return
 

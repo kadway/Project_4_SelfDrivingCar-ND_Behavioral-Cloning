@@ -38,7 +38,7 @@ def train_cnn(model_name = "model.h5"):
     
     # Preprocess incoming data
     model.add(Lambda(lambda x: x / 255.0 - 0.5, input_shape=(160,320,3), name='lambda'))
-    
+    #model.add(Lambda(lambda x: x / 127.0 - 1, input_shape=(160,320,3), name='lambda'))
     #first was 70,25 crop - did not work very well- now try 50,20
     model.add(Cropping2D(cropping=((50,20), (0,0)), name='crop'))
     
@@ -61,7 +61,7 @@ def train_cnn(model_name = "model.h5"):
     
     #network training
     model.compile(loss='mse', optimizer='adam')
-    history_object=model.fit_generator(train_generator, steps_per_epoch=len(train_samples)/batch_size, validation_data=validation_generator, validation_steps=len(validation_samples)/batch_size, epochs=5, verbose = 1)
+    history_object=model.fit_generator(train_generator, steps_per_epoch=len(train_samples)*10/batch_size, validation_data=validation_generator, validation_steps=len(validation_samples)/batch_size, epochs=5, verbose = 1)
     model.save(model_name)
     
     return history_object

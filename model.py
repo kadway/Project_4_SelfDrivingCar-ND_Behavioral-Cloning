@@ -107,11 +107,11 @@ def train_cnn(epochs_in, batch_size = 120, model_name = "model.h5"):
     model.add(Cropping2D(cropping=((50,20), (0,0)), name='crop'))
     
     #add convolutional layers
-    model.add(Conv2D(24, (5, 5), subsample=(2,2), activation='relu',name='conv1'))
-    model.add(Conv2D(36, (5, 5), subsample=(2,2), activation='relu', name='conv2'))
-    model.add(Conv2D(48, (5, 5), subsample=(2,2), activation='relu', name='conv3'))
-    model.add(Conv2D(64, (3, 3),activation='relu', name='conv4'))
-    model.add(Conv2D(64, (3, 3),activation='relu', name='conv5'))
+    model.add(Conv2D(48, (5, 5), subsample=(2,2), activation='relu',name='conv1'))
+    model.add(Conv2D(72, (5, 5), subsample=(2,2), activation='relu', name='conv2'))
+    model.add(Conv2D(96, (5, 5), subsample=(2,2), activation='relu', name='conv3'))
+    model.add(Conv2D(128, (3, 3),activation='relu', name='conv4'))
+    model.add(Conv2D(128, (3, 3),activation='relu', name='conv5'))
     
     #add dropout layer and then flatten before fully connected layers
     model.add(Dropout(0.5))
@@ -127,12 +127,7 @@ def train_cnn(epochs_in, batch_size = 120, model_name = "model.h5"):
     model.compile(loss='mse', optimizer='adam')
     history_object=model.fit_generator(train_generator, steps_per_epoch=len(train_samples)/batch_size, validation_data=validation_generator, validation_steps=len(validation_samples)/batch_size, epochs=epochs_in, verbose = 1)
     model.save(model_name)
-    name=model_name.split(".")[0]
-    i = 0
-    while os.path.exists("plots/{}_history{}.p".format(model, i)):
-        i += 1
-    with open('plots/{}_history{}.p'.format(name,i), 'wb') as f:
-        pickle.dump(history_object.history, f)
+    print("Model saved.")
     return history_object
 
 def plot_loss(history_object, model_name = "model.h5"):
@@ -146,17 +141,14 @@ def plot_loss(history_object, model_name = "model.h5"):
     plt.ylabel('mean squared error loss')
     plt.xlabel('epoch')
     plt.legend(['training set', 'validation set'], loc='upper right')
-
-    i = 0
-    while os.path.exists("plots/{}_loss{}.jpg".format(model_name,i)):
-        i += 1
-    plt.savefig("plots/{}_loss{}.jpg".format(model_name,i))    
+    plt.savefig("plots/{}_loss.jpg".format(model_name))    
     return
 
 def main():
     model_name=input("type model name like model.h5:")
     epochs_in=input("type number of epochs:")
-    history=train_cnn(epochs_in, model_name)
+    batch_size = 150
+    history=train_cnn(epochs_in, batch_size, model_name)
     name=model_name.split(".")[0]
     plot_loss(history, name)
 

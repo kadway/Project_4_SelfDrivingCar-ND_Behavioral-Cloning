@@ -7,82 +7,94 @@ import numpy as np
 from keras.utils import plot_model
 import matplotlib.image as mpimg
 from model import increase_brightness
+import matplotlib.pyplot as plt
+from PIL import Image
 
-csv_path = 'train_data/driving_log.csv'
-img_path = 'train_data/IMG/'
-def read_preview_images():
-    
+img_path = "CNN_images/input/"
+
+def read_preview_images(img_limit):
     images = []
-    with open(csv_path) as csvfile:
-        reader = csv.reader(csvfile)
-        for idx, line in enumerate(reader):
-            source_path = line[0]
-            filename = source_path.split('/')[-1]
-            current_path = img_path + filename
-            image = increase_brightness(cv2.imread(current_path), 255)
-            #cv2.imwrite("CNN_images/input{}.jpg".format(idx), image)
-            images.append(image)
-            if idx >= 9:
-                break 
-    #print("Copy of input images saved to: CNN_images/input*.jpg")
-    return np.asarray(images)
-
-def show(model_name="model.h5"):
-    #load the saved model
-    model = load_model(model_name)
-    print("Model loaded.")
+    #get image list
+    images_in = os.listdir(img_path)
+    #read-in orginal image
+    for fname in images_in:
+        images.append(cv2.imread(img_path + fname))
+    #conver to numpy array
+    images_out = np.asarray(images)
+    #if given limit is hight than existing images, use all the images
+    if(img_limit>len(images_out)):
+        img_limit=len(images_out)
     
-    input_images = read_preview_images()
+    return images_out[:img_limit,:,:]
 
+def show_lambda_crop_layers(input_images, model):
+        
+    #get the intermediate layers of the loaded model
     norm = Model(model.input, model.get_layer('lambda').output)
     crop = Model(model.input, model.get_layer('crop').output)
-    #convolution1 = Model(model.input, model.get_layer('conv1').output)
-    #convolution2 = Model(model.input, model.get_layer('conv2').output)
-    #convolution3 = Model(model.input, model.get_layer('conv3').output)
-    #convolution4 = Model(model.input, model.get_layer('conv4').output)
-    #convolution5 = Model(model.input, model.get_layer('conv5').output)
     #plot_model(model, to_file='plots/model.jpg')
-        
+    print("Input array shape: ", input_images.shape)
+    #predict the output of the intermediate layers for the given input images
     out_norm  = norm.predict(input_images)
-    print(out_norm.shape)
+    print("Norm layer output shape: ", out_norm.shape)
     out_crop  = crop.predict(input_images)
-    print(out_crop.shape)
-    #out_conv1 = convolution1.predict(input_images)
-    #print(out_conv1.shape)
-    #out_conv2 = convolution2.predict(input_images)
-    #print(out_conv2.shape)
-    #out_conv3 = convolution3.predict(input_images)
-    #print(out_conv3.shape)
-    #out_conv4 = convolution4.predict(input_images)
-    #print(out_conv4.shape)
-    #out_conv5 = convolution5.predict(input_images)
-    #print(out_conv5.shape)
-        
+    print("Crop layer output shape: ", out_crop.shape)
     for idx,image in enumerate(out_norm):
-        cv2.imwrite("CNN_images/lambda{}.jpg".format(idx), image*255)
-        #print("Norm layer images saved.")
+        cv2.imwrite("CNN_images/output/lambda{}.jpg".format(idx), image*255)
     for idx,image in enumerate(out_crop):
-        cv2.imwrite("CNN_images/crop{}.jpg".format(idx),image*255)
-    #for idx,image in enumerate(out_conv1)
-    #    for i,img in enumerate(image.shape[2])
-    #    cv2.imwrite("CNN_images/conv1_{}{}.jpg".format(idx,i),img*255)
-    #for idx,image in enumerate(out_conv2):
-    #    cv2.imwrite("CNN_images/conv2_{}.jpg".format(idx),image)
-    #for idx,image in enumerate(out_conv3):
-    #    cv2.imwrite("CNN_images/conv3_{}.jpg".format(idx),image)
-    #for idx, image in enumerate(out_conv4):
-    #    cv2.imwrite("CNN_images/conv4_{}.jpg".format(idx), image)
-    #for idx, image in enumerate(out_conv5):
-    #    cv2.imwrite("CNN_images/conv5_{}.jpg".format(idx), image)
-    
-    return norm, out_norm
-
-def predict_image(input_img, name, model_name="model.h5", layer_name="lambda"):
-    #load the saved model
-    model = load_model(model_name)
-    out = Model(model.input, model.get_layer(layer_name).output)
-    out_img  = out.predict(input_img)
-    cv2.imwrite("CNN_images/Prediction_layer_{}_{}".format(layer_name,idx), image*255)
-    print("Prediction from layer {} saved to CNN_images/Prediction_layer_{}_{}".format(layer_name, layer_name, name))
+        cv2.imwrite("CNN_images/output/crop{}.jpg".format(idx),image*255)
+    print("Predicted images saved.")
     return
 
+def predict_layer_output(images, model, layer_name="lambda"):
+  
+    #get the intermediate layers of the loaded model
+    conv_layer = Model(model.input, model.get_layer(layer_name).output)
+    out_conv = conv_layer.predict(images)
+
+    #how many filters exist
+    depth=len(out_conv[0,0,0,:])
+    print("The {} layer shape is {} and has {} filters".format(layer_name,out_conv.shape, depth))
+    #how many input images      
+    img_num = len(out_conv[:,0,0,0])
+    print("There are {} input images ".format(img_num))
+          
+    #combine all the filters for each input image in one unique list
+    out_images = []
+    for image in range(0, img_num-1):
+        for i in range(0, depth-1):
+            out_images.append(out_conv[image,:,:,i])
+    #convert to numpy array
+    out_images=np.asarray(out_images)
+    print("Combined filter image array has shape:", out_images.shape)
+    
+    width = out_images.shape[2]
+    height = out_images.shape[1]
+    
+    #total number of pixels
+    pix = img_num*depth*width*height
+    # 4 columns of images
+    wout = int(width*4)
+    # x lines
+    hout = int(pix/wout)
+    print("Each filter has {} x {}".format(height,width))
+    print("Combined image is {} x {} and has {} pixels".format(hout,wout, pix))
+    
+    #initialy empty 2d array for the images
+    output = np.zeros((int(hout), int(wout)))
+    
+    # fill the picture with the output filters from the CNN layer
+    im=0
+    for i in range(0, int(wout/width)):
+        for j in range(0, int((hout/height))):
+            try:
+                output[j*height:(j+1)*height,i*width:(i+1)*width] = out_images[im,:,:]
+                im = im + 1
+            except:
+                break
+                
+    #save the resulting image
+    result = Image.fromarray((output*255).astype(np.uint8))
+    result.save('CNN_images/output/{}.jpg'.format(layer_name))
+    
+    return

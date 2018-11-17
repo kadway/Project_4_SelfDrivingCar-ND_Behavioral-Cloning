@@ -46,7 +46,7 @@ def show_lambda_crop_layers(input_images, model):
     print("Predicted images saved.")
     return
 
-def predict_layer_output(images, model, layer_name="lambda"):
+def predict_layer_output(images, model, layer_name="conv1"):
   
     #get the intermediate layers of the loaded model
     conv_layer = Model(model.input, model.get_layer(layer_name).output)

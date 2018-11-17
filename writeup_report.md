@@ -59,35 +59,24 @@ My model consists of a convolution neural network (CNN) based on the architectur
 from 25 April 2016 `End to End Learning for Self-Driving Cars`.
 It has a lambda layer for image normalization, a crop layer for image cropping, 5 convolutional layers,
 1 dropout layer, a flattening layer and 3 fully connected layers like shown bellow:
-_________________________________________________________________
-Layer (type)                 Output Shape              Param #   
-|================================================================
-lambda (Lambda)              (None, 160, 320, 3)       0         
-_________________________________________________________________
-crop (Cropping2D)            (None, 90, 320, 3)        0         
-_________________________________________________________________
-conv1 (Conv2D)               (None, 43, 158, 24)       1824      
-_________________________________________________________________
-conv2 (Conv2D)               (None, 20, 77, 36)        21636     
-_________________________________________________________________
-conv3 (Conv2D)               (None, 8, 37, 48)         43248     
-_________________________________________________________________
-conv4 (Conv2D)               (None, 6, 35, 64)         27712     
-_________________________________________________________________
-conv5 (Conv2D)               (None, 4, 33, 64)         36928     
-_________________________________________________________________
-dropout_1 (Dropout)          (None, 4, 33, 64)         0         
-_________________________________________________________________
-flatten_1 (Flatten)          (None, 8448)              0         
-_________________________________________________________________
-dense_1 (Dense)              (None, 100)               844900    
-_________________________________________________________________
-dense_2 (Dense)              (None, 50)                5050      
-_________________________________________________________________
-dense_3 (Dense)              (None, 10)                510       
-_________________________________________________________________
-dense_4 (Dense)              (None, 1)                 11        
-|================================================================
+
+
+| Layer   (type)     	|     Output Shape	        | 
+|:---------------------:|:-------------------------:| 
+| lambda (Lambda)    	| (None, 160, 320, 3)    	| 
+| crop (Cropping2D)    	| (None, 90, 320, 3)        |
+| conv1 (Conv2D)        | (None, 43, 158, 24)       |
+| conv2 (Conv2D)        | (None, 20, 77, 36)        | 
+| conv3 (Conv2D)        | (None, 8, 37, 48)         |    									
+| conv4 (Conv2D)        | (None, 6, 35, 64)         |
+| conv5 (Conv2D)        | (None, 4, 33, 64)         | 
+| dropout_1 (Dropout)   | (None, 4, 33, 64)         |   
+| flatten_1 (Flatten)   | (None, 8448)              |
+| dense_1 (Dense)       | (None, 100)               |  
+| dense_2 (Dense)       | (None, 50)                |      
+| dense_3 (Dense)       | (None, 10)                |       
+| dense_4 (Dense)       | (None, 1)                 |
+
 
 The Jupyter html file can be seen [here](Behavioral_Cloning.html), where the training steps can be visualized.
 The training and validation loss of the first model is shown bellow:
@@ -161,36 +150,23 @@ At the end of the process, the vehicle is able to drive autonomously around trac
 #### 2. Final Model Architecture
 
 The final model architecture (model.py lines 106-124) consisted of a convolution neural network with the following layers
-and layer sizes:
+and layer sizes:   
 
-Layer (type)                 Output Shape              Param #   
-|===============================================================
-lambda (Lambda)              (None, 160, 320, 3)       0         
-_________________________________________________________________
-crop (Cropping2D)            (None, 90, 320, 3)        0         
-_________________________________________________________________
-conv1 (Conv2D)               (None, 43, 158, 48)       3648      
-_________________________________________________________________
-conv2 (Conv2D)               (None, 20, 77, 72)        86472     
-_________________________________________________________________
-conv3 (Conv2D)               (None, 8, 37, 96)         172896    
-_________________________________________________________________
-conv4 (Conv2D)               (None, 6, 35, 128)        110720    
-_________________________________________________________________
-conv5 (Conv2D)               (None, 4, 33, 128)        147584    
-_________________________________________________________________
-dropout_1 (Dropout)          (None, 4, 33, 128)        0         
-_________________________________________________________________
-flatten_1 (Flatten)          (None, 16896)             0         
-_________________________________________________________________
-dense_1 (Dense)              (None, 100)               1689700   
-_________________________________________________________________
-dense_2 (Dense)              (None, 50)                5050      
-_________________________________________________________________
-dense_3 (Dense)              (None, 10)                510       
-_________________________________________________________________
-dense_4 (Dense)              (None, 1)                 11        
-|=================================================================
+| Layer   (type)     	|     Output Shape	        | 
+|:---------------------:|:-------------------------:| 
+| lambda (Lambda)    	| (None, 160, 320, 3)    	| 
+| crop (Cropping2D)    	| (None, 90, 320, 3)        |
+| conv1 (Conv2D)        | (None, 43, 158, 48)       |
+| conv2 (Conv2D)        | (None, 20, 77, 72)        | 
+| conv3 (Conv2D)        | (None, 8, 37, 96)         |    									
+| conv4 (Conv2D)        | (None, 6, 35, 128)        |
+| conv5 (Conv2D)        | (None, 4, 33, 128)        | 
+| dropout_1 (Dropout)   | (None, 4, 33, 128)        |   
+| flatten_1 (Flatten)   | (None, 16896)             |
+| dense_1 (Dense)       | (None, 100)               |  
+| dense_2 (Dense)       | (None, 50)                |      
+| dense_3 (Dense)       | (None, 10)                |       
+| dense_4 (Dense)       | (None, 1)                 |
 
 For the final model the training loss is 0.0246 and the validation loss is 0.0230.
 See the Jupyter html file [here](Behavioral_Cloning2.html) for the training steps and loss plot of this model.
